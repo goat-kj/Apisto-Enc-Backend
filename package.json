@@ -1,0 +1,14 @@
+{
+  "name": "y",
+  "version": "y",
+  "description": "Apistogramma Encyclopedia Backend",
+  "main": "y",
+  "repository": "https://github.com/goat-kj/Apisto-Enc-Backend.git",
+  "author": "KJ Han",
+  "license": "None",
+  "private": false,
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.4"
+  }
+}
