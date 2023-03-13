@@ -6,7 +6,7 @@ const port = 4000;
 const db = new sqlite3.Database('./apistogramma.db');
 
 db.serialize(() => {
-  db.run('CREATE TABLE IF NOT EXISTS fish (name TEXT, origin TEXT, size REAL, pH REAL)');
+  db.run('CREATE TABLE IF NOT EXISTS fish (name TEXT, origin TEXT, size REAL, pH REAL, image TEXT)');
 });
 
 app.use(express.json());
@@ -23,7 +23,7 @@ app.get('/all', (req, res) => {
 
 app.post('/create', (req,res) => {
     const fish = req.body;
-    db.run(`INSERT INTO fish (name, origin, size, pH) VALUES (?, ?, ?, ?)`, [fish.name, fish.origin, fish.size, fish.pH], function(err) {
+    db.run(`INSERT INTO fish (name, origin, size, pH, image) VALUES (?, ?, ?, ?, ?)`, [fish.name, fish.origin, fish.size, fish.pH, fish.image], function(err) {
         if (err) {
           return console.log(err.message);
         };
@@ -37,8 +37,8 @@ app.put('/update/:id', (req, res) => {
     const updatedFish = req.body;
   
     db.run(
-      `UPDATE fish SET name = ?, origin = ?, size = ?, pH = ? WHERE rowid = ?`,
-      [updatedFish.name, updatedFish.origin, updatedFish.size, updatedFish.pH, fishId],
+      `UPDATE fish SET name = ?, origin = ?, size = ?, pH = ?, image = ? WHERE rowid = ?`,
+      [updatedFish.name, updatedFish.origin, updatedFish.size, updatedFish.pH, updatedFish.image, fishId],
       function(err) {
         if (err) {
           return console.log(err.message);
