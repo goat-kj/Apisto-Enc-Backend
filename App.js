@@ -5,9 +5,14 @@ const cors = require('cors');
 const app = express();
 const port = 4000;
 const db = new sqlite3.Database('./apisto.db');
+const loginDB = new sqlite3.Database('./login.db');
 
 db.serialize(() => {
   db.run('CREATE TABLE IF NOT EXISTS apisto (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, origin TEXT, size TEXT, pH TEXT, image TEXT)');
+});
+
+loginDB.serialize(() => {
+  loginDB.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, account TEXT, password TEXT)');
 });
 
 app.use(express.json());
@@ -22,6 +27,35 @@ app.get('/all', (req, res) => {
       res.json(rows);
     });
   });
+
+  app.post('/signup', (req, res) => {
+    const { account, password } = req.body;
+    loginDB.run(`INSERT INTO users (account, password) VALUES (?, ?)`, [account, password], function(err) {
+      if (err) {
+        return console.log(err.message);
+      };
+      console.log(`A row has been inserted with rowid ${this.lastID}`);
+      res.status(201).send('Created Successfully');
+    });
+  });
+  
+
+  app.post('/login', (req, res) => {
+    const { account, password } = req.body;
+    loginDB.get(`SELECT * FROM users WHERE account = ? AND password = ?`, [account, password], function(err, row) {
+      if (err) {
+        return console.log(err.message);
+      }
+      if (row) {
+        console.log(`User with account ${account} has logged in`);
+        res.status(200).send('Login successful');
+      } else {
+        console.log(`Invalid account or password`);
+        res.status(401).send('Invalid account or password');
+      }
+    });
+  });
+  
 
   app.post('/create', (req,res) => {
     const fish = req.body;
